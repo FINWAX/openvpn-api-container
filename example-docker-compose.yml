@@ -1,0 +1,26 @@
+services:
+  vpn_service:
+    build:
+      context: .
+    container_name: vpn_service
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    volumes:
+      # Mount your directory where you want store OpenVPN config files.
+      - /g/temp/vpn-configs:/app/configs
+    environment:
+      - STARTAPP_OPENVPN_CONFIG_NAME=${STARTAPP_OPENVPN_CONFIG_NAME:-}
+    ports:
+      # You can also customize 5111 to preferred port.
+      - "5111:5000"
+      # Your app ports here.
+      - "5112:80"
+
+  other_container:
+    image: martinay/show-public-ip
+    container_name: other_container
+    network_mode: service:vpn_service
+    depends_on:
+      - vpn_service
