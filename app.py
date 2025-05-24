@@ -9,7 +9,10 @@ app = Flask(__name__)
 
 @app.route('/api/info', methods=['GET'])
 def info():
-    con_inf, error = connection_info()
+    try:
+        con_inf, error = connection_info()
+    except Exception as e:
+        error = str(e) or 'Unknown error.'
 
     if error:
         return jsonify({
@@ -25,7 +28,11 @@ def connect_openvpn():
     if not config_name:
         return jsonify({'ok': False, 'error': 'configName is required'})
 
-    connected, error = connect_to_openvpn(config_name)
+    try:
+        connected, error = connect_to_openvpn(config_name)
+    except Exception as e:
+        error = str(e) or 'Unknown error.'
+
     if error:
         return jsonify({
             'error': error
@@ -36,7 +43,11 @@ def connect_openvpn():
 
 @app.route('/api/disconnect', methods=['GET'])
 def disconnect_openvpn():
-    disconnected, error = disconnect_from_openvpn()
+    try:
+        disconnected, error = disconnect_from_openvpn()
+    except Exception as e:
+        error = str(e) or 'Unknown error.'
+
     if error:
         return jsonify({
             'error': error
